@@ -50,7 +50,7 @@ export interface MessageRequest {
   conversation_id: string;
   message_id: string;
   category: MessageCategory;
-  data: string;
+  data_base64: string;
   recipient_id?: string;
   representative_id?: string;
   quote_message_id?: string;

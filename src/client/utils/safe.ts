@@ -214,7 +214,7 @@ export const decodeSafeTransaction = (raw: string): SafeTransaction => {
   };
 };
 
-export const buildSafeTransaction = (utxos: SafeUtxoOutput[], rs: SafeTransactionRecipient[], gs: GhostKey[], extra: string, references: string[] = []) => {
+export const buildSafeTransaction = (utxos: SafeUtxoOutput[], rs: SafeTransactionRecipient[], gs: GhostKey[], extra: string, references: string[] = []): SafeTransaction => {
   if (utxos.length === 0) throw new Error('empty inputs');
   if (Buffer.from(extra).byteLength > 512) throw new Error('extra data is too long');
 
@@ -258,6 +258,7 @@ export const buildSafeTransaction = (utxos: SafeUtxoOutput[], rs: SafeTransactio
     inputs,
     outputs,
     references,
+    signatureMap: []
   };
 };
 

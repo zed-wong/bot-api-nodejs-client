@@ -40,7 +40,7 @@ export const MessageKeystoreClient = (axiosInstance: AxiosInstance, keystore: Ke
       recipient_id: recipientID,
       conversation_id: uniqueConversationID(keystore.app_id, recipientID),
       message_id: uuid(),
-      data: base64RawURLEncode(Buffer.from(data)),
+      data_base64: base64RawURLEncode(Buffer.from(data)),
     };
     await send(messageRequest);
     return messageRequest;

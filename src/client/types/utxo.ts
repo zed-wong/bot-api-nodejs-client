@@ -19,6 +19,8 @@ export interface UtxoOutput {
 }
 
 export interface SafeUtxoOutput extends UtxoOutput {
+  asset_id: string;
+  kernel_asset_id: string;
   receivers: string[];
   receivers_hash: string;
   receivers_threshold: number;
