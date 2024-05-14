@@ -72,6 +72,15 @@ export interface SafeTransaction extends MultisigTransaction {
   signatureMap?: Record<number, string>[];
 }
 
+export interface SafeMultisigsReceiver {
+  members: string[];
+  members_hash: string;
+  threshold: number;
+  destination: string;
+  tag: string;
+  withdrawal_hash: string;
+}
+
 export interface SafeMultisigsResponse {
   type: 'transaction_request';
   request_id: string;
@@ -79,7 +88,7 @@ export interface SafeMultisigsResponse {
   asset_id: string; // asset uuid
   kernel_asset_id: string; // SHA256Hash of asset uuid
   amount: string;
-  receivers: string[];
+  receivers: SafeMultisigsReceiver[];
   senders: string[];
   senders_hash: string;
   senders_threshold: number;

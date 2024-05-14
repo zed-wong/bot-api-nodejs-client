@@ -258,7 +258,7 @@ export const buildSafeTransaction = (utxos: SafeUtxoOutput[], rs: SafeTransactio
     inputs,
     outputs,
     references,
-    signatureMap: []
+    signatureMap: [],
   };
 };
 
