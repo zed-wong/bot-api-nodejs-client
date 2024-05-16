@@ -22,7 +22,7 @@ export const getChallenge = () => {
   return { verifier, challenge };
 };
 
-const signToken = (payload: Object, private_key: string): string => {
+export const signToken = (payload: Object, private_key: string): string => {
   const header = base64RawURLEncode(serialize({ alg: 'EdDSA', typ: 'JWT' }));
   const payloadStr = base64RawURLEncode(serialize(payload));
 
