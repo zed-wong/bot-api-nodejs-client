@@ -44,7 +44,7 @@ export interface SafeOutputsRequest {
   members?: string[];
   threshold?: number;
   state?: UtxoState;
-  offset?: string;
+  offset?: number;
   limit?: number;
 }
 
