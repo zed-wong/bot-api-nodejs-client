@@ -14,6 +14,7 @@ export interface UserResponse {
   created_at: string;
   is_verified: boolean;
   is_scam: boolean;
+  has_safe: boolean;
 }
 
 export interface AuthenticationUserResponse extends UserResponse {
