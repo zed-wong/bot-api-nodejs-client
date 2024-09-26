@@ -1,10 +1,11 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { Keystore } from './keystore';
-import { BlazeOptions } from './blaze';
+import { BlazeOptions } from '../../blaze/type';
 
 export interface RequestConfig
   extends Partial<Pick<AxiosRequestConfig, 'baseURL' | 'headers' | 'timeout' | 'httpAgent' | 'httpsAgent' | 'onDownloadProgress' | 'onUploadProgress' | 'proxy'>> {
-  responseCallback?: (rep: unknown) => void;
+  responseCallback?: (rep: unknown) => void; // deprecated
+  errorMap?: (error: any) => void;
   retry?: number;
 }
 

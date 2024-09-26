@@ -1,8 +1,7 @@
-import forge from 'node-forge';
-import qs from 'qs';
 import { validate, v4 } from 'uuid';
 import BigNumber from 'bignumber.js';
-import { Input, Output, GhostKey, GhostKeyRequest, PaymentParams, SafeTransaction, SafeTransactionRecipient, SafeUtxoOutput } from '../types';
+import { ed25519 } from '@noble/curves/ed25519';
+import type { Input, Output, GhostKey, GhostKeyRequest, PaymentParams, SafeTransaction, SafeTransactionRecipient, SafeUtxoOutput } from '../types';
 import { Encoder, magic } from './encoder';
 import { Decoder } from './decoder';
 import { base64RawURLEncode } from './base64';
@@ -10,7 +9,7 @@ import { TIPBodyForSequencerRegister } from './tip';
 import { getPublicFromMainnetAddress, buildMixAddress, parseMixAddress } from './address';
 import { encodeScript } from './multisigs';
 import { blake3Hash, newHash, sha512Hash } from './uniq';
-import { edwards25519 as ed } from './ed25519';
+import { edwards25519 as ed, getRandomBytes } from './ed25519';
 
 export const TxVersionHashSignature = 0x05;
 export const OutputTypeScript = 0x00;
@@ -44,30 +43,27 @@ export const buildMixinOneSafePaymentUri = (params: PaymentParams) => {
     trace: params.trace ?? v4(),
     return_to: params.returnTo && encodeURIComponent(params.returnTo),
   };
-  const query = qs.stringify(p);
+  const query = Object.entries(p)
+    .filter(([key, value]) => key && value)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
   return `${baseUrl}?${query}`;
 };
 
 export const signSafeRegistration = (user_id: string, tipPin: string, privateKey: Buffer) => {
-  const public_key = forge.pki.ed25519.publicKeyFromPrivateKey({ privateKey }).toString('hex');
+  const public_key = Buffer.from(ed25519.getPublicKey(privateKey)).toString('hex');
 
   const hash = newHash(Buffer.from(user_id));
-  let signData = forge.pki.ed25519.sign({
-    message: hash,
-    privateKey,
-  });
+  let signData = ed25519.sign(hash, privateKey);
   const signature = base64RawURLEncode(signData);
 
   const tipBody = TIPBodyForSequencerRegister(user_id, public_key);
-  signData = forge.pki.ed25519.sign({
-    message: tipBody,
-    privateKey: Buffer.from(tipPin, 'hex'),
-  });
+  signData = ed25519.sign(tipBody, tipPin);
 
   return {
     public_key,
     signature,
-    pin_base64: signData.toString('hex'),
+    pin_base64: Buffer.from(signData).toString('hex'),
   };
 };
 
@@ -87,7 +83,7 @@ export const getMainnetAddressGhostKey = (recipient: GhostKeyRequest, hexSeed = 
   const publics = recipient.receivers.map(d => getPublicFromMainnetAddress(d));
   if (!publics.every(p => !!p)) return undefined;
 
-  const seed = hexSeed ? Buffer.from(hexSeed, 'hex') : Buffer.from(forge.random.getBytesSync(64), 'binary');
+  const seed = hexSeed ? Buffer.from(hexSeed, 'hex') : getRandomBytes(64);
   const r = Buffer.from(ed.scalar.toBytes(ed.setUniformBytes(seed)));
   const keys = publics.map(addressPubic => {
     const spendKey = addressPubic!.subarray(0, 32);
