@@ -13,6 +13,7 @@ const keystore = require('../keystore.json');
 
 const withdrawal_asset_id = 'b91e18ff-a9ae-3dc7-8679-e935d9a4b34b';
 const withdrawal_amount = '1';
+const withdrawal_memo = 'memo';
 const withdrawal_destination = '';
 const spendPrivateKey = '';
 
@@ -44,6 +45,7 @@ const main = async () => {
       {
         amount: withdrawal_amount,
         destination: withdrawal_destination,
+        tag: withdrawal_memo,
       },
     ];
     const { utxos, change } = getUnspentOutputsForRecipients(outputs, recipients);
@@ -63,7 +65,7 @@ const main = async () => {
         })),
     );
     // spare the 0 inedx for withdrawal output, withdrawal output doesnt need ghost key
-    const tx = buildSafeTransaction(utxos, recipients, [undefined, ...ghosts], 'withdrawal-memo');
+    const tx = buildSafeTransaction(utxos, recipients, [undefined, ...ghosts], 'mainnet-transaction-extra');
     console.log(tx);
     const raw = encodeSafeTransaction(tx);
     const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
@@ -84,7 +86,7 @@ const main = async () => {
         index: i,
       })),
     );
-    const feeTx = buildSafeTransaction(feeUtxos, feeRecipients, feeGhosts, 'withdrawal-fee-memo', [ref]);
+    const feeTx = buildSafeTransaction(feeUtxos, feeRecipients, feeGhosts, 'mainnet-fee-transaction-extra', [ref]);
     console.log(feeTx);
     const feeRaw = encodeSafeTransaction(feeTx);
     console.log(feeRaw);
@@ -130,6 +132,7 @@ const main = async () => {
       {
         amount: withdrawal_amount,
         destination: withdrawal_destination,
+        tag: withdrawal_memo,
       },
       // fee output
       buildSafeTransactionRecipient([MixinCashier], 1, fee.amount),
@@ -151,7 +154,7 @@ const main = async () => {
         })),
     );
     // spare the 0 inedx for withdrawal output, withdrawal output doesnt need ghost key
-    const tx = buildSafeTransaction(utxos, recipients, [undefined, ...ghosts], 'withdrawal-memo');
+    const tx = buildSafeTransaction(utxos, recipients, [undefined, ...ghosts], 'mainnet-transaction-extra');
     console.log(tx);
     const raw = encodeSafeTransaction(tx);
 
